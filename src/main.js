@@ -2,7 +2,7 @@
 
 const DAY_EVENTS_COUNT = 3;
 
-const render = (container, template, place=`beforeend`) => {
+const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
@@ -184,4 +184,4 @@ const createTripDayEventTemplate = () => {
 
 for (let i = 0; i < DAY_EVENTS_COUNT; i++) {
   render(tripDayEvents, createTripDayEventTemplate());
-};
+}
