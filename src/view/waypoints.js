@@ -1,16 +1,29 @@
-import {createWaypointTemplate} from "./waypoint";
-import {createWaypointEditTemplate} from "./waypoint-edit";
+import {createElement} from "../utils/render";
 
-export const createWaypointsTemplate = (waypoints, index) => {
-  let waypointsTemplate = ``;
-
-  if (index === 1) {
-    waypointsTemplate += createWaypointEditTemplate(waypoints[0]);
+export default class Waypoints {
+  constructor() {
+    this._element = null;
   }
 
-  waypoints.forEach((waypoint) => {
-    waypointsTemplate += createWaypointTemplate(waypoint);
-  });
+  _createTemplate() {
+    return (
+      `<ul class="trip-events__list"></ul>`
+    );
+  }
 
-  return waypointsTemplate;
-};
+  _getTemplate() {
+    return this._createTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
