@@ -1,3 +1,5 @@
+
+import {createElement} from "../utils/render";
 import {getFormatedWaypointTime, getFormatedWaypointDate, getWaypointDuration} from "../utils/date";
 
 const createOffersTemplate = (offers) => {
@@ -14,48 +16,72 @@ const createOffersTemplate = (offers) => {
   return template;
 };
 
-export const createWaypointTemplate = (waypoint) => {
-  const {basePrice, dateFrom, dateTo, destination, offers, type} = waypoint;
+export default class Waypoint {
+  constructor(waypoint) {
+    this._waypoint = waypoint;
 
-  const startDate = getFormatedWaypointDate(dateFrom);
-  const endDate = getFormatedWaypointDate(dateTo);
-  const startTime = getFormatedWaypointTime(dateFrom);
-  const endTime = getFormatedWaypointTime(dateTo);
+    this._element = null;
+  }
 
-  const duration = getWaypointDuration(dateFrom, dateTo);
+  _createTemplate(waypoint) {
+    const {basePrice, dateFrom, dateTo, destination, offers, type} = waypoint;
 
-  const offersTemplate = createOffersTemplate(offers);
+    const startDate = getFormatedWaypointDate(dateFrom);
+    const endDate = getFormatedWaypointDate(dateTo);
+    const startTime = getFormatedWaypointTime(dateFrom);
+    const endTime = getFormatedWaypointTime(dateTo);
 
-  return (
-    `<li class="trip-events__item">
-      <div class="event">
-        <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
-        </div>
-        <h3 class="event__title">${type} to ${destination}</h3>
+    const duration = getWaypointDuration(dateFrom, dateTo);
 
-        <div class="event__schedule">
-          <p class="event__time">
-            <time class="event__start-time" datetime="${startDate}">${startTime}</time>
-            &mdash;
-            <time class="event__end-time" datetime="${endDate}">${endTime}</time>
+    const offersTemplate = createOffersTemplate(offers);
+
+    return (
+      `<li class="trip-events__item">
+        <div class="event">
+          <div class="event__type">
+            <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+          </div>
+          <h3 class="event__title">${type} to ${destination}</h3>
+
+          <div class="event__schedule">
+            <p class="event__time">
+              <time class="event__start-time" datetime="${startDate}">${startTime}</time>
+              &mdash;
+              <time class="event__end-time" datetime="${endDate}">${endTime}</time>
+            </p>
+            <p class="event__duration">${duration}</p>
+          </div>
+
+          <p class="event__price">
+            &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
           </p>
-          <p class="event__duration">${duration}</p>
+
+          <h4 class="visually-hidden">Offers:</h4>
+          <ul class="event__selected-offers">
+            ${offersTemplate}
+          </ul>
+
+          <button class="event__rollup-btn" type="button">
+            <span class="visually-hidden">Open event</span>
+          </button>
         </div>
+      </li>`
+    );
+  }
 
-        <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
-        </p>
+  _getTemplate() {
+    return this._createTemplate(this._waypoint);
+  }
 
-        <h4 class="visually-hidden">Offers:</h4>
-        <ul class="event__selected-offers">
-          ${offersTemplate}
-        </ul>
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
 
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </div>
-    </li>`
-  );
-};
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

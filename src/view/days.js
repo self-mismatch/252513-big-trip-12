@@ -1,13 +1,30 @@
-import {createDayTemplate} from "./day";
+import {createElement} from "../utils/render";
 
-export const createDaysTemplate = (waypoints) => {
-  let daysTemplate = ``;
+export default class Days {
+  constructor() {
+    this._element = null;
+  }
 
-  waypoints.forEach((oneDayWaypoints, index) => {
-    daysTemplate += createDayTemplate(oneDayWaypoints, index);
-  });
+  _createTemplate() {
+    return (
+      `<ul class="trip-days"></ul>`
+    );
+  }
 
-  return (
-    `<ul class="trip-days">${daysTemplate}</ul>`
-  );
-};
+  _getTemplate() {
+    return this._createTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

@@ -1,3 +1,4 @@
+import {createElement} from "../utils/render";
 import {getFormatedDate} from "../utils/date";
 
 const createRouteTemplate = (waypoints) => {
@@ -17,26 +18,52 @@ const createRouteTemplate = (waypoints) => {
   );
 };
 
-export const createInfoTemplate = (waypoints) => {
-  const routeTemplate = createRouteTemplate(waypoints);
+export default class Sorting {
+  constructor(waypoints) {
+    this._waypoints = waypoints;
 
-  const firstWaypoint = waypoints[0][0];
-  const lastWaypoint = waypoints[waypoints.length - 1][waypoints[waypoints.length - 1].length - 1];
+    this._element = null;
+  }
 
-  const dateFrom = getFormatedDate(firstWaypoint.dateFrom);
-  const dateTo = firstWaypoint.dateFrom.getMonth() !== lastWaypoint.dateFrom.getMonth() ? getFormatedDate(lastWaypoint.dateTo) : lastWaypoint.dateTo.getDate();
+  _createTemplate(waypoints) {
+    const routeTemplate = createRouteTemplate(waypoints);
 
-  return (
-    `<section class="trip-main__trip-info  trip-info">
-      <div class="trip-info__main">
-        ${routeTemplate}
+    const firstWaypoint = waypoints[0][0];
+    const lastWaypoint = waypoints[waypoints.length - 1][waypoints[waypoints.length - 1].length - 1];
 
-        <p class="trip-info__dates">${dateFrom}&nbsp;&mdash;&nbsp;${dateTo}</p>
-      </div>
+    const dateFrom = getFormatedDate(firstWaypoint.dateFrom);
+    const dateTo = firstWaypoint.dateFrom.getMonth() !== lastWaypoint.dateFrom.getMonth() ? getFormatedDate(lastWaypoint.dateTo) : lastWaypoint.dateTo.getDate();
 
-      <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
-      </p>
-    </section>`
-  );
-};
+    return (
+      `<section class="trip-main__trip-info  trip-info">
+        <div class="trip-info__main">
+          ${routeTemplate}
+
+          <p class="trip-info__dates">${dateFrom}&nbsp;&mdash;&nbsp;${dateTo}</p>
+        </div>
+
+        <p class="trip-info__cost">
+          Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        </p>
+      </section>`
+    );
+  }
+
+  _getTemplate() {
+    return this._createTemplate(this._waypoints);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this._getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+
