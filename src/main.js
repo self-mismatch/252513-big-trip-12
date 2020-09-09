@@ -3,6 +3,7 @@ import DaysView from "./view/days";
 import InfoView from "./view/info";
 import FilterView from "./view/filter";
 import MenuView from "./view/menu";
+import NoWaypointView from "./view/no-waypoint";
 import SortingView from "./view/sorting";
 import WaypointView from "./view/waypoint";
 import WaypointEditView from "./view/waypoint-edit";
@@ -14,7 +15,7 @@ import {RenderPosition} from "./const";
 import {generateWaypoint} from "./mock/waypoint";
 import {sortWaypointsByDate} from "./utils/sorting";
 
-const WAYPOINTS_COUNT = 20;
+const WAYPOINTS_COUNT = 50;
 
 const waypoints = new Array(WAYPOINTS_COUNT).fill().map(generateWaypoint);
 const daysWithSortedWaypoints = sortWaypointsByDate(waypoints);
@@ -31,10 +32,7 @@ render(controls, new FilterView().getElement(), RenderPosition.AFTEREND, filters
 
 const pageMain = document.querySelector(`.page-main`);
 const events = pageMain.querySelector(`.trip-events`);
-render(events, new SortingView().getElement());
-
-const daysComponent = new DaysView();
-render(events, daysComponent.getElement());
+render(events, new SortingView(waypoints).getElement());
 
 const renderWaypoint = (waypointsElement, waypoint) => {
   const waypointComponent = new WaypointView(waypoint);
@@ -91,10 +89,18 @@ const renderDay = (daysElement, day, index) => {
   });
 };
 
-const renderDays = (waypointsDays) => {
+const renderDays = (daysContainer, waypointsDays) => {
+  if (waypointsDays.length === 0) {
+    render(daysContainer, new NoWaypointView().getElement());
+    return;
+  }
+
+  const daysComponent = new DaysView();
+  render(daysContainer, daysComponent.getElement());
+
   waypointsDays.forEach((day, index) => {
     renderDay(daysComponent.getElement(), day, index);
   });
 };
 
-renderDays(daysWithSortedWaypoints);
+renderDays(events, daysWithSortedWaypoints);

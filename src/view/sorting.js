@@ -1,11 +1,19 @@
 import {createElement} from "../utils/render";
 
 export default class Sorting {
-  constructor() {
+  constructor(waypoints) {
+    this._waypoints = waypoints;
+
     this._element = null;
   }
 
-  _createTemplate() {
+  _createTemplate(waypoints) {
+    if (waypoints.length === 0) {
+      return (
+        ` `
+      );
+    }
+
     return (
       `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
         <span class="trip-sort__item  trip-sort__item--day">Day</span>
@@ -41,7 +49,7 @@ export default class Sorting {
   }
 
   _getTemplate() {
-    return this._createTemplate();
+    return this._createTemplate(this._waypoints);
   }
 
   getElement() {
