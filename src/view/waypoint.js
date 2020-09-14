@@ -1,26 +1,27 @@
-
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 import {getFormatedWaypointTime, getFormatedWaypointDate, getWaypointDuration} from "../utils/date";
 
-const createOffersTemplate = (offers) => {
-  let template = ``;
-
-  offers.forEach((offer) => {
-    template += `<li class="event__offer">
-      <span class="event__offer-title">${offer.fullName}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-    </li>`;
-  });
-
-  return template;
-};
-
-export default class Waypoint {
+export default class Waypoint extends AbstractView {
   constructor(waypoint) {
+    super();
+
     this._waypoint = waypoint;
 
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
+  }
+
+  _createOffersTemplate(offers) {
+    let template = ``;
+
+    offers.forEach((offer) => {
+      template += `<li class="event__offer">
+        <span class="event__offer-title">${offer.fullName}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      </li>`;
+    });
+
+    return template;
   }
 
   _createTemplate(waypoint) {
@@ -33,7 +34,7 @@ export default class Waypoint {
 
     const duration = getWaypointDuration(dateFrom, dateTo);
 
-    const offersTemplate = createOffersTemplate(offers);
+    const offersTemplate = this._createOffersTemplate(offers);
 
     return (
       `<li class="trip-events__item">
@@ -73,15 +74,13 @@ export default class Waypoint {
     return this._createTemplate(this._waypoint);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 }

@@ -1,28 +1,28 @@
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 import {getFormatedDate} from "../utils/date";
 
-const createRouteTemplate = (waypoints) => {
-  const route = [].concat([], ...waypoints);
-  let routeCities = ``;
+export default class Sorting extends AbstractView {
+  constructor(waypoints) {
+    super();
 
-  for (let i = 0; i < route.length; i++) {
-    routeCities += route[i].destination;
-
-    if (i !== route.length - 1) {
-      routeCities += ` &mdash; `;
-    }
+    this._waypoints = waypoints;
   }
 
-  return (
-    `<h1 class="trip-info__title">${routeCities}</h1>`
-  );
-};
+  _createRouteTemplate(waypoints) {
+    const route = [].concat([], ...waypoints);
+    let routeCities = ``;
 
-export default class Sorting {
-  constructor(waypoints) {
-    this._waypoints = waypoints;
+    for (let i = 0; i < route.length; i++) {
+      routeCities += route[i].destination;
 
-    this._element = null;
+      if (i !== route.length - 1) {
+        routeCities += ` &mdash; `;
+      }
+    }
+
+    return (
+      `<h1 class="trip-info__title">${routeCities}</h1>`
+    );
   }
 
   _createTemplate(waypoints) {
@@ -36,7 +36,7 @@ export default class Sorting {
       );
     }
 
-    const routeTemplate = createRouteTemplate(waypoints);
+    const routeTemplate = this._createRouteTemplate(waypoints);
 
     const firstWaypoint = waypoints[0][0];
     const lastWaypoint = waypoints[waypoints.length - 1][waypoints[waypoints.length - 1].length - 1];
@@ -61,18 +61,6 @@ export default class Sorting {
 
   _getTemplate() {
     return this._createTemplate(this._waypoints);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

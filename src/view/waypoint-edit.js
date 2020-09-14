@@ -1,29 +1,31 @@
-
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 import {getFormatedWaypointEditDate} from "../utils/date";
 
-const createOffersTemplate = (offers) => {
-  let template = ``;
-
-  offers.forEach((offer) => {
-    template += `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}-1" type="checkbox" name="event-offer-${offer.name}" checked>
-      <label class="event__offer-label" for="event-offer-${offer.name}-1">
-        <span class="event__offer-title">${offer.fullName}</span>
-        &plus;
-        &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`;
-  });
-
-  return template;
-};
-
-export default class WaypointEdit {
+export default class WaypointEdit extends AbstractView {
   constructor(waypoint) {
+    super();
+
     this._waypoint = waypoint;
 
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+  }
+
+  _createOffersTemplate(offers) {
+    let template = ``;
+
+    offers.forEach((offer) => {
+      template += `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.name}-1" type="checkbox" name="event-offer-${offer.name}" checked>
+        <label class="event__offer-label" for="event-offer-${offer.name}-1">
+          <span class="event__offer-title">${offer.fullName}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`;
+    });
+
+    return template;
   }
 
   _createTemplate(waypoint) {
@@ -41,7 +43,7 @@ export default class WaypointEdit {
 
     const hasOffers = offers.length > 0;
 
-    const offersTemplate = hasOffers ? createOffersTemplate(offers) : null;
+    const offersTemplate = hasOffers ? this._createOffersTemplate(offers) : null;
 
     return (
       `<li class="trip-events__item">
@@ -179,15 +181,23 @@ export default class WaypointEdit {
     return this._createTemplate(this._waypoint);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 }
