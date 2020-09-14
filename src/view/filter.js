@@ -1,10 +1,6 @@
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 
-export default class Filter {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Filter extends AbstractView {
   _createTemplate() {
     return (
       `<form class="trip-filters" action="#" method="get">
@@ -30,17 +26,5 @@ export default class Filter {
 
   _getTemplate() {
     return this._createTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

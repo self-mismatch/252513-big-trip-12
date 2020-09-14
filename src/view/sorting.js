@@ -1,10 +1,10 @@
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 
-export default class Sorting {
+export default class Sorting extends AbstractView {
   constructor(waypoints) {
-    this._waypoints = waypoints;
+    super();
 
-    this._element = null;
+    this._waypoints = waypoints;
   }
 
   _createTemplate(waypoints) {
@@ -50,18 +50,6 @@ export default class Sorting {
 
   _getTemplate() {
     return this._createTemplate(this._waypoints);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

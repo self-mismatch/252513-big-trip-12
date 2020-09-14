@@ -1,12 +1,12 @@
-import {createElement} from "../utils/render";
+import AbstractView from "./abstract";
 import {getFormatedDate, getFormatedDayFullDate} from "../utils/date";
 
-export default class Day {
+export default class Day extends AbstractView {
   constructor(waypoints, index) {
+    super();
+
     this._waypoints = waypoints;
     this._index = index;
-
-    this._element = null;
   }
 
   _createTemplate(waypoints, index) {
@@ -27,18 +27,6 @@ export default class Day {
 
   _getTemplate() {
     return this._createTemplate(this._waypoints, this._index);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

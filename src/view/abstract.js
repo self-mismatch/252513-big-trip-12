@@ -1,18 +1,17 @@
 import {createElement} from "../utils/render";
 
-export default class Days {
+export default class Abstract {
   constructor() {
-    this._element = null;
-  }
+    if (new.target === Abstract) {
+      throw new Error(`Can't instantiate Abstract, only concrete one.`);
+    }
 
-  _createTemplate() {
-    return (
-      `<ul class="trip-days"></ul>`
-    );
+    this._element = null;
+    this._callback = {};
   }
 
   _getTemplate() {
-    return this._createTemplate();
+    throw new Error(`Abstract method not implemented: _getTemplate`);
   }
 
   getElement() {
@@ -27,4 +26,3 @@ export default class Days {
     this._element = null;
   }
 }
-
