@@ -1,7 +1,6 @@
 import InfoView from "./view/info";
 import FilterView from "./view/filter";
 import MenuView from "./view/menu";
-import SortingView from "./view/sorting";
 
 import TripPresenter from "./presenter/trip";
 
@@ -9,12 +8,12 @@ import {RenderPosition} from "./const";
 import {render} from "./utils/render";
 
 import {generateWaypoint} from "./mock/waypoint";
-import {sortWaypointsByDate} from "./utils/sorting";
+import {sortWaypointsByDays} from "./utils/sorting";
 
 const WAYPOINTS_COUNT = 10;
 
 const waypoints = new Array(WAYPOINTS_COUNT).fill().map(generateWaypoint);
-const daysWithSortedWaypoints = sortWaypointsByDate(waypoints);
+const daysWithSortedWaypoints = sortWaypointsByDays(waypoints.slice());
 
 const pageHeader = document.querySelector(`.page-header`);
 const tripMain = pageHeader.querySelector(`.trip-main`);
@@ -28,7 +27,6 @@ render(controls, new FilterView(), RenderPosition.AFTERELEMENT, filtersTitle);
 
 const pageMain = document.querySelector(`.page-main`);
 const events = pageMain.querySelector(`.trip-events`);
-render(events, new SortingView(waypoints));
 
 const tripPresenter = new TripPresenter(events);
-tripPresenter.init(daysWithSortedWaypoints);
+tripPresenter.init(waypoints);

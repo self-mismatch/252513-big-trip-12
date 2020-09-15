@@ -113,11 +113,11 @@ export const generateWaypoint = () => {
     dateFrom: getRandomDate(),
     dateTo: getRandomDate(),
     destination: getRandomElement(cities),
-    offers: generateOffers(),
     info: {
       description: generateDescription(),
       photo: `http://picsum.photos/248/152?r=${Math.random()}`,
     },
+    offers: generateOffers(),
     type: getRandomElement(waypointTypes),
   };
 };

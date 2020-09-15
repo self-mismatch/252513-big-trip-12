@@ -4,4 +4,10 @@ const RenderPosition = {
   BEFOREELEMENT: `beforeelement`,
 };
 
-export {RenderPosition};
+const SortType = {
+  DEFAULT: `default`,
+  DURATION_DOWN: `duration-down`,
+  PRICE_DOWN: `price-down`,
+};
+
+export {RenderPosition, SortType};
