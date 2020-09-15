@@ -1,56 +1,64 @@
-// const getFirstDayDate = (waypoints) => {
-//   let firstDayDate = 31;
-
-//   waypoints.forEach((waypoint) => {
-//     const currentWaypointDay = waypoint.dateFrom.getDate();
-
-//     if (currentWaypointDay < firstDayDate) {
-//       firstDayDate = currentWaypointDay;
-//     }
-//   });
-
-//   return firstDayDate;
-// };
+// NOTE: Отрефакторить
 
 const getWaypointsDays = (waypoints) => {
-  const days = [];
+  let days = new Set();
 
   waypoints.forEach((waypoint) => {
-    const day = waypoint.dateFrom.getDate();
-
-    if (!days.includes(day)) {
-      days.push(day);
-    }
+    days.add(waypoint.dateFrom.getDate());
   });
+
+  days = Array.from(days);
 
   return days;
 };
 
-// Улучшить
-const sortWaypointsByDate = (waypoints) => {
-  const sortedWaypoints = waypoints.sort((a, b) => {
-    return a.dateFrom - b.dateFrom;
-  });
+const groupWaypoints = (waypoints) => {
+  return [waypoints];
+};
 
+const groupWaypointsByDays = (waypoints) => {
   const days = getWaypointsDays(waypoints);
-
-  const sortedWaypointsByDays = [];
+  const groupedWaypoints = [];
 
   for (let i = 0; i < days.length; i++) {
-    sortedWaypointsByDays.push([]);
+    groupedWaypoints.push([]);
   }
 
   let currentDay = 0;
 
-  sortedWaypoints.forEach((waypoint) => {
+  waypoints.forEach((waypoint) => {
     if (waypoint.dateFrom.getDate() !== days[currentDay]) {
       currentDay++;
     }
 
-    sortedWaypointsByDays[currentDay].push(waypoint);
+    groupedWaypoints[currentDay].push(waypoint);
   });
 
-  return sortedWaypointsByDays;
+  return groupedWaypoints;
 };
 
-export {sortWaypointsByDate};
+const sortWaypointsByDays = (waypoints) => {
+  const sortedWaypoints = waypoints.sort((a, b) => {
+    return a.dateFrom - b.dateFrom;
+  });
+
+  return groupWaypointsByDays(sortedWaypoints);
+};
+
+const sortWaypointsDurationDown = (waypoints) => {
+  const sortedWaypoints = waypoints.sort((a, b) => {
+    return (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom);
+  });
+
+  return groupWaypoints(sortedWaypoints);
+};
+
+const sortWaypointsPriceDown = (waypoints) => {
+  const sortedWaypoints = waypoints.sort((a, b) => {
+    return b.basePrice - a.basePrice;
+  });
+
+  return groupWaypoints(sortedWaypoints);
+};
+
+export {sortWaypointsByDays, sortWaypointsDurationDown, sortWaypointsPriceDown};
