@@ -1,14 +1,19 @@
-import AbstractView from "./abstract";
+import SmartView from "./smart";
 import {getFormatedWaypointEditDate} from "../utils/date";
 
-export default class WaypointEdit extends AbstractView {
+export default class WaypointEdit extends SmartView {
   constructor(waypoint) {
     super();
 
-    this._waypoint = waypoint;
+    this._data = waypoint;
 
-    this._editClickHandler = this._editClickHandler.bind(this);
+    this._editCloseClickHandler = this._editCloseClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationInputHandler = this._destinationInputHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   _createOffersTemplate(offers) {
@@ -34,6 +39,7 @@ export default class WaypointEdit extends AbstractView {
       dateFrom = new Date(),
       dateTo = new Date(),
       destination = ``,
+      isFavourite = false,
       offers = [],
       type = `bus`,
     } = waypoint;
@@ -152,7 +158,7 @@ export default class WaypointEdit extends AbstractView {
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
             <button class="event__reset-btn" type="reset">Delete</button>
   
-            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+            <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavourite ? `checked` : ``}>
             <label class="event__favorite-btn" for="event-favorite-1">
               <span class="visually-hidden">Add to favorite</span>
               <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -178,26 +184,72 @@ export default class WaypointEdit extends AbstractView {
   }
 
   _getTemplate() {
-    return this._createTemplate(this._waypoint);
-  }
-
-  _editClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editClick();
-  }
-
-  setEditClickHandler(callback) {
-    this._callback.editClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+    return this._createTemplate(this._data);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this._data);
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _editCloseClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editCloseClick();
+  }
+
+  setEditCloseClickHandler(callback) {
+    this._callback.editCloseClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editCloseClickHandler);
+  }
+
+  _favouriteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.favouriteClick();
+  }
+
+  setFavouriteClickHandler(callback) {
+    this._callback.favouriteClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favouriteClickHandler);
+  }
+
+  _typeChangeHandler(evt) {
+    const label = evt.target;
+    if (!label.classList.contains(`event__type-label`)) {
+      return;
+    }
+
+    const input = this.getElement().querySelector(`#` + label.htmlFor);
+
+    this.updateData({
+      type: input.value
+    });
+  }
+
+  _destinationInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: evt.target.value
+    }, true);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-list`)
+      .addEventListener(`click`, this._typeChangeHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._destinationInputHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditCloseClickHandler(this._callback.editCloseClick);
+    this.setFavouriteClickHandler(this._callback.favouriteClick);
   }
 }
