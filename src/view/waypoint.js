@@ -7,7 +7,7 @@ export default class Waypoint extends AbstractView {
 
     this._waypoint = waypoint;
 
-    this._editClickHandler = this._editClickHandler.bind(this);
+    this._editOpenClickHandler = this._editOpenClickHandler.bind(this);
   }
 
   _createOffersTemplate(offers) {
@@ -74,13 +74,13 @@ export default class Waypoint extends AbstractView {
     return this._createTemplate(this._waypoint);
   }
 
-  _editClickHandler(evt) {
+  _editOpenClickHandler(evt) {
     evt.preventDefault();
-    this._callback.editClick();
+    this._callback.editOpenClick();
   }
 
-  setEditClickHandler(callback) {
-    this._callback.editClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+  setEditOpenClickHandler(callback) {
+    this._callback.editOpenClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editOpenClickHandler);
   }
 }

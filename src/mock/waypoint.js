@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomElement, getRandomDate} from "./utils/common";
+import {getRandomInteger, getRandomBoolean, getRandomElement, getRandomDate} from "./utils/common";
 
 const waypointTypes = [
   `taxi`,
@@ -77,6 +77,10 @@ const offers = [
   },
 ];
 
+const generateId = () => {
+  return Date.now() + parseInt(Math.random() * 10000, 10);
+};
+
 const generateDescription = () => {
   const sentencesCount = getRandomInteger(1, 5);
   let description = ``;
@@ -113,10 +117,12 @@ export const generateWaypoint = () => {
     dateFrom: getRandomDate(),
     dateTo: getRandomDate(),
     destination: getRandomElement(cities),
+    id: generateId(),
     info: {
       description: generateDescription(),
       photo: `http://picsum.photos/248/152?r=${Math.random()}`,
     },
+    isFavourite: getRandomBoolean(),
     offers: generateOffers(),
     type: getRandomElement(waypointTypes),
   };

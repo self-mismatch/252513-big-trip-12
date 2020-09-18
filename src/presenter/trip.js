@@ -2,12 +2,13 @@ import DayView from "../view/day";
 import NoWaypointView from "../view/no-waypoint";
 import SortingView from "../view/sorting";
 import TripView from "../view/trip";
-import WaypointView from "../view/waypoint";
-import WaypointEditView from "../view/waypoint-edit";
 import WaypointListView from "../view/waypoint-list";
 
+import WaypointPresenter from "../presenter/waypoint";
+
 import {SortType} from "../const";
-import {render, replace} from "../utils/render";
+import {updateItem} from "../utils/common";
+import {render} from "../utils/render";
 import {sortWaypointsByDays, sortWaypointsDurationDown, sortWaypointsPriceDown} from "../utils/sorting";
 
 export default class Trip {
@@ -24,6 +25,10 @@ export default class Trip {
     this._noWaypointsComponent = new NoWaypointView();
     this._tripComponent = new TripView();
 
+    this._waypointPresenter = {};
+
+    this._handleWaypointChange = this._handleWaypointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
@@ -36,6 +41,19 @@ export default class Trip {
 
     render(this._tripContainer, this._tripComponent);
     this._renderTrip();
+  }
+
+  _handleWaypointChange(updatedWaypoint) {
+    this._sourcedWaypoints = updateItem(this._sourcedWaypoints, updatedWaypoint);
+    this._sortedWaypointsByDays = updateItem(this._sortedWaypointsByDays, updatedWaypoint);
+    this._waypoints = updateItem(this._waypoints, updatedWaypoint);
+    this._waypointPresenter[updatedWaypoint.id].init(updatedWaypoint);
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._waypointPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _sortWaypoints(sortType) {
@@ -69,43 +87,9 @@ export default class Trip {
   }
 
   _renderWaypoint(waypointContainer, waypoint) {
-    const waypointComponent = new WaypointView(waypoint);
-    const waypointEditComponent = new WaypointEditView(waypoint);
-
-    const replaceFormToWaypoint = () => {
-      replace(waypointComponent, waypointEditComponent);
-    };
-
-    const replaceWaypointToForm = () => {
-      replace(waypointEditComponent, waypointComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key !== `Escape` && evt.key !== `Esc`) {
-        return;
-      }
-
-      evt.preventDefault();
-      replaceFormToWaypoint();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    waypointComponent.setEditClickHandler(() => {
-      replaceWaypointToForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    waypointEditComponent.setEditClickHandler(() => {
-      replaceFormToWaypoint();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    waypointEditComponent.setFormSubmitHandler(() => {
-      replaceFormToWaypoint();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    render(waypointContainer, waypointComponent);
+    const waypointPresenter = new WaypointPresenter(waypointContainer, this._handleWaypointChange, this._handleModeChange);
+    waypointPresenter.init(waypoint);
+    this._waypointPresenter[waypoint.id] = waypointPresenter;
   }
 
   _renderDay(day, index, isGrouped) {
@@ -133,10 +117,20 @@ export default class Trip {
   }
 
   _clearTrip() {
-    this._tripComponent.getElement().innerHTML = ``;
+    this._tripComponent.getElement().remove();
+    this._tripComponent = null;
+    // Object
+    //   .values(this._waypointPresenter)
+    //   .forEach((presenter) => presenter.destroy());
+    // this._waypointPresenter = {};
   }
 
   _renderTrip() {
+    if (!this._tripComponent) {
+      this._tripComponent = new TripView();
+      render(this._tripContainer, this._tripComponent);
+    }
+
     if (this._waypoints.length === 0) {
       this._renderNoWaypoints();
       return;
