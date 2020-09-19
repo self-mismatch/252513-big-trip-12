@@ -44,7 +44,7 @@ export default class Waypoint {
       return;
     }
 
-    if (this._waypointContainer.getElement().contains(this._prevWaypointComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._waypointComponent, this._prevWaypointComponent);
     }
 
@@ -53,6 +53,8 @@ export default class Waypoint {
     }
 
     remove(this._prevWaypointComponent);
+
+    this._prevWaypointEditComponent.removeDatepicker();
     remove(this._prevWaypointEditComponent);
   }
 
@@ -75,6 +77,7 @@ export default class Waypoint {
     }
 
     evt.preventDefault();
+    this._waypointEditComponent.reset(this._waypoint);
     this._replaceFormToWaypoint();
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -97,6 +100,7 @@ export default class Waypoint {
   }
 
   _handleEditCloseClick() {
+    this._waypointEditComponent.reset(this._waypoint);
     this._replaceFormToWaypoint();
   }
 
