@@ -21,6 +21,7 @@ export default class WaypointEdit extends SmartView {
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   _createOffersTemplate(offers) {
@@ -248,7 +249,7 @@ export default class WaypointEdit extends SmartView {
     }, true);
   }
 
-  setDatepicker() {
+  _setDatepicker() {
     this.removeDatepicker();
 
     this._dateFromPicker = flatpickr(
@@ -258,7 +259,7 @@ export default class WaypointEdit extends SmartView {
           defaultDate: this._data.dateFrom,
           disable: [
             (date) => {
-              return (date > this._data.dateTo);
+              return (date > this._data.dateFrom);
             }
           ],
           enableTime: true,
@@ -298,12 +299,16 @@ export default class WaypointEdit extends SmartView {
     this.updateData({
       dateFrom: userDate
     }, true);
+
+    this._dateToPicker.redraw();
   }
 
   _dateToChangeHandler([userDate]) {
     this.updateData({
       dateTo: userDate
     }, true);
+
+    this._dateFromPicker.redraw();
   }
 
   _setInnerHandlers() {
@@ -317,7 +322,7 @@ export default class WaypointEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.setDatepicker();
+    this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.editCloseClick);
     this.setFavouriteClickHandler(this._callback.favouriteClick);

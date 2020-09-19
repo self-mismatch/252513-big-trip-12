@@ -44,7 +44,7 @@ export default class Waypoint {
       return;
     }
 
-    if (this._waypointContainer.getElement().contains(this._prevWaypointComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._waypointComponent, this._prevWaypointComponent);
     }
 
@@ -53,6 +53,8 @@ export default class Waypoint {
     }
 
     remove(this._prevWaypointComponent);
+
+    this._prevWaypointEditComponent.removeDatepicker();
     remove(this._prevWaypointEditComponent);
   }
 
@@ -95,13 +97,11 @@ export default class Waypoint {
 
   _handleEditOpenClick() {
     this._replaceWaypointToForm();
-    this._waypointEditComponent.setDatepicker();
   }
 
   _handleEditCloseClick() {
-    this._replaceFormToWaypoint();
     this._waypointEditComponent.reset(this._waypoint);
-    // this._waypointEditComponent.removeDatepicker();
+    this._replaceFormToWaypoint();
   }
 
   _handleFormSubmit(waypoint) {

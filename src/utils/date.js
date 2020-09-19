@@ -27,7 +27,7 @@ const getWaypointDuration = (dateFrom, dateTo) => {
 };
 
 const getFormatedWaypointEditDate = (date) => {
-  return moment(date).format(`YY/MM/DD HH:mm`);
+  return moment(date).format(`DD/MM/YYYY HH:mm`);
 };
 
 export {getFormatedDate, getFormatedDayFullDate, getFormatedWaypointTime, getFormatedWaypointDate, getWaypointDuration, getFormatedWaypointEditDate};
