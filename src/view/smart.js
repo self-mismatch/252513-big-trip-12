@@ -18,6 +18,10 @@ export default class Smart extends AbstractView {
 
     const newElement = this.getElement();
 
+    console.log(`Новый элемент - ` + newElement);
+    console.log(`Старый элемент - ` + prevElement);
+    console.log(`Родитель - ` + parent);
+
     parent.replaceChild(newElement, prevElement);
     prevElement = null;
 

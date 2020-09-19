@@ -75,6 +75,7 @@ export default class Waypoint {
     }
 
     evt.preventDefault();
+    this._waypointEditComponent.reset(this._waypoint);
     this._replaceFormToWaypoint();
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -94,10 +95,13 @@ export default class Waypoint {
 
   _handleEditOpenClick() {
     this._replaceWaypointToForm();
+    this._waypointEditComponent.setDatepicker();
   }
 
   _handleEditCloseClick() {
     this._replaceFormToWaypoint();
+    this._waypointEditComponent.reset(this._waypoint);
+    // this._waypointEditComponent.removeDatepicker();
   }
 
   _handleFormSubmit(waypoint) {

@@ -1,17 +1,24 @@
 import SmartView from "./smart";
 import {getFormatedWaypointEditDate} from "../utils/date";
+import flatpickr from "flatpickr";
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export default class WaypointEdit extends SmartView {
   constructor(waypoint) {
     super();
 
     this._data = waypoint;
+    this._dateFromPicker = null;
+    this._dateToPicker = null;
 
     this._editCloseClickHandler = this._editCloseClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
+    this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
+    this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -187,6 +194,10 @@ export default class WaypointEdit extends SmartView {
     return this._createTemplate(this._data);
   }
 
+  reset(waypoint) {
+    this.updateData(waypoint);
+  }
+
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(this._data);
@@ -237,6 +248,64 @@ export default class WaypointEdit extends SmartView {
     }, true);
   }
 
+  setDatepicker() {
+    this.removeDatepicker();
+
+    this._dateFromPicker = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.dateFrom,
+          disable: [
+            (date) => {
+              return (date > this._data.dateTo);
+            }
+          ],
+          enableTime: true,
+          onChange: this._dateFromChangeHandler
+        }
+    );
+
+    this._dateToPicker = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          defaultDate: this._data.dateTo,
+          disable: [
+            (date) => {
+              return (date < this._data.dateFrom);
+            }
+          ],
+          enableTime: true,
+          onChange: this._dateToChangeHandler
+        }
+    );
+  }
+
+  removeDatepicker() {
+    if (this._dateFromPicker) {
+      this._dateFromPicker.destroy();
+      this._dateFromPicker = null;
+    }
+
+    if (this._dateToPicker) {
+      this._dateToPicker.destroy();
+      this._dateToPicker = null;
+    }
+  }
+
+  _dateFromChangeHandler([userDate]) {
+    this.updateData({
+      dateFrom: userDate
+    }, true);
+  }
+
+  _dateToChangeHandler([userDate]) {
+    this.updateData({
+      dateTo: userDate
+    }, true);
+  }
+
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.event__type-list`)
@@ -248,6 +317,7 @@ export default class WaypointEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this.setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.editCloseClick);
     this.setFavouriteClickHandler(this._callback.favouriteClick);
