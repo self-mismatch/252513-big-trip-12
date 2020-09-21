@@ -1,14 +1,14 @@
 import SmartView from "./smart";
-import {getFormatedWaypointEditDate} from "../utils/date";
+import {getFormatedPointEditDate} from "../utils/date";
 import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-export default class WaypointEdit extends SmartView {
-  constructor(waypoint) {
+export default class PointEdit extends SmartView {
+  constructor(point) {
     super();
 
-    this._data = waypoint;
+    this._data = point;
     this._dateFromPicker = null;
     this._dateToPicker = null;
 
@@ -19,6 +19,7 @@ export default class WaypointEdit extends SmartView {
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -41,7 +42,7 @@ export default class WaypointEdit extends SmartView {
     return template;
   }
 
-  _createTemplate(waypoint) {
+  _createTemplate(point) {
     const {
       basePrice = ``,
       dateFrom = new Date(),
@@ -50,10 +51,10 @@ export default class WaypointEdit extends SmartView {
       isFavourite = false,
       offers = [],
       type = `bus`,
-    } = waypoint;
+    } = point;
 
-    const startDate = getFormatedWaypointEditDate(dateFrom);
-    const endDate = getFormatedWaypointEditDate(dateTo);
+    const startDate = getFormatedPointEditDate(dateFrom);
+    const endDate = getFormatedPointEditDate(dateTo);
 
     const hasOffers = offers.length > 0;
 
@@ -195,8 +196,8 @@ export default class WaypointEdit extends SmartView {
     return this._createTemplate(this._data);
   }
 
-  reset(waypoint) {
-    this.updateData(waypoint);
+  reset(point) {
+    this.updateData(point);
   }
 
   _formSubmitHandler(evt) {
@@ -249,6 +250,16 @@ export default class WaypointEdit extends SmartView {
     }, true);
   }
 
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._data);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteClickHandler);
+  }
+
   _setDatepicker() {
     this.removeDatepicker();
 
@@ -259,7 +270,7 @@ export default class WaypointEdit extends SmartView {
           defaultDate: this._data.dateFrom,
           disable: [
             (date) => {
-              return (date > this._data.dateFrom);
+              return (date > this._data.dateTo);
             }
           ],
           enableTime: true,
@@ -312,12 +323,8 @@ export default class WaypointEdit extends SmartView {
   }
 
   _setInnerHandlers() {
-    this.getElement()
-      .querySelector(`.event__type-list`)
-      .addEventListener(`click`, this._typeChangeHandler);
-    this.getElement()
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`input`, this._destinationInputHandler);
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typeChangeHandler);
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationInputHandler);
   }
 
   restoreHandlers() {
@@ -326,5 +333,6 @@ export default class WaypointEdit extends SmartView {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.editCloseClick);
     this.setFavouriteClickHandler(this._callback.favouriteClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 }

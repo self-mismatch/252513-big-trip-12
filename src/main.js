@@ -1,19 +1,27 @@
+import FiltersModel from "./model/filters";
+import PointsModel from "./model/points";
+
 import InfoView from "./view/info";
-import FilterView from "./view/filter";
 import MenuView from "./view/menu";
 
+import FilterPresenter from "./presenter/filter";
 import TripPresenter from "./presenter/trip";
 
 import {RenderPosition} from "./const";
 import {render} from "./utils/render";
 
-import {generateWaypoint} from "./mock/waypoint";
-import {sortWaypointsByDays} from "./utils/sorting";
+import {generatePoint} from "./mock/point";
+import {sortPointsByDays} from "./utils/sorting";
 
-const WAYPOINTS_COUNT = 10;
+const POINTS_COUNT = 10;
 
-const waypoints = new Array(WAYPOINTS_COUNT).fill().map(generateWaypoint);
-const daysWithSortedWaypoints = sortWaypointsByDays(waypoints.slice());
+const points = new Array(POINTS_COUNT).fill().map(generatePoint);
+const daysWithSortedPoints = sortPointsByDays(points.slice());
+
+const filtersModel = new FiltersModel();
+
+const pointsModel = new PointsModel();
+pointsModel.setPoints(points);
 
 const pageHeader = document.querySelector(`.page-header`);
 const tripMain = pageHeader.querySelector(`.trip-main`);
@@ -21,12 +29,14 @@ const controls = tripMain.querySelector(`.trip-controls`);
 const tabsTitle = controls.querySelector(`h2:first-of-type`);
 const filtersTitle = controls.querySelector(`h2:last-of-type`);
 
-render(tripMain, new InfoView(daysWithSortedWaypoints), `afterbegin`);
+render(tripMain, new InfoView(daysWithSortedPoints), `afterbegin`);
 render(controls, new MenuView(), RenderPosition.AFTERELEMENT, tabsTitle);
-render(controls, new FilterView(), RenderPosition.AFTERELEMENT, filtersTitle);
 
 const pageMain = document.querySelector(`.page-main`);
 const events = pageMain.querySelector(`.trip-events`);
 
-const tripPresenter = new TripPresenter(events);
-tripPresenter.init(waypoints);
+const tripPresenter = new TripPresenter(events, pointsModel, filtersModel);
+const filterPresenter = new FilterPresenter(controls, filtersTitle, filtersModel, pointsModel);
+
+filterPresenter.init();
+tripPresenter.init();

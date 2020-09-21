@@ -2,14 +2,14 @@ import AbstractView from "./abstract";
 import {getFormatedDate} from "../utils/date";
 
 export default class Sorting extends AbstractView {
-  constructor(waypoints) {
+  constructor(points) {
     super();
 
-    this._waypoints = waypoints;
+    this._points = points;
   }
 
-  _createRouteTemplate(waypoints) {
-    const route = [].concat([], ...waypoints);
+  _createRouteTemplate(points) {
+    const route = [].concat([], ...points);
     let routeCities = ``;
 
     for (let i = 0; i < route.length; i++) {
@@ -25,8 +25,8 @@ export default class Sorting extends AbstractView {
     );
   }
 
-  _createTemplate(waypoints) {
-    if (waypoints.length === 0) {
+  _createTemplate(points) {
+    if (points.length === 0) {
       return (
         `<section class="trip-main__trip-info  trip-info">
           <p class="trip-info__cost">
@@ -36,13 +36,13 @@ export default class Sorting extends AbstractView {
       );
     }
 
-    const routeTemplate = this._createRouteTemplate(waypoints);
+    const routeTemplate = this._createRouteTemplate(points);
 
-    const firstWaypoint = waypoints[0][0];
-    const lastWaypoint = waypoints[waypoints.length - 1][waypoints[waypoints.length - 1].length - 1];
+    const firstPoint = points[0][0];
+    const lastPoint = points[points.length - 1][points[points.length - 1].length - 1];
 
-    const dateFrom = getFormatedDate(firstWaypoint.dateFrom);
-    const dateTo = firstWaypoint.dateFrom.getMonth() !== lastWaypoint.dateFrom.getMonth() ? getFormatedDate(lastWaypoint.dateTo) : lastWaypoint.dateTo.getDate();
+    const dateFrom = getFormatedDate(firstPoint.dateFrom);
+    const dateTo = firstPoint.dateFrom.getMonth() !== lastPoint.dateFrom.getMonth() ? getFormatedDate(lastPoint.dateTo) : lastPoint.dateTo.getDate();
 
     return (
       `<section class="trip-main__trip-info  trip-info">
@@ -60,7 +60,7 @@ export default class Sorting extends AbstractView {
   }
 
   _getTemplate() {
-    return this._createTemplate(this._waypoints);
+    return this._createTemplate(this._points);
   }
 }
 

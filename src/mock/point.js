@@ -1,6 +1,6 @@
 import {getRandomInteger, getRandomBoolean, getRandomElement, getRandomDate} from "./utils/common";
 
-const waypointTypes = [
+const pointTypes = [
   `taxi`,
   `bus`,
   `train`,
@@ -111,7 +111,7 @@ const generateOffers = () => {
   return finalOffers;
 };
 
-export const generateWaypoint = () => {
+export const generatePoint = () => {
   return {
     basePrice: getRandomInteger(200, 1500),
     dateFrom: getRandomDate(),
@@ -124,6 +124,6 @@ export const generateWaypoint = () => {
     },
     isFavourite: getRandomBoolean(),
     offers: generateOffers(),
-    type: getRandomElement(waypointTypes),
+    type: getRandomElement(pointTypes),
   };
 };

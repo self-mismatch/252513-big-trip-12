@@ -2,17 +2,17 @@ import AbstractView from "./abstract";
 import {getFormatedDate, getFormatedDayFullDate} from "../utils/date";
 
 export default class Day extends AbstractView {
-  constructor(waypoints, index, isGrouped) {
+  constructor(points, index, isGrouped) {
     super();
 
-    this._waypoints = waypoints;
+    this._points = points;
     this._index = index;
     this._isGrouped = isGrouped;
   }
 
-  _createTemplate(waypoints, index) {
+  _createTemplate(points, index) {
     const dayNumber = ++index;
-    const date = waypoints[0].dateFrom;
+    const date = points[0].dateFrom;
     const dayDate = getFormatedDate(date);
     const dayFullDate = getFormatedDayFullDate(date);
 
@@ -35,7 +35,7 @@ export default class Day extends AbstractView {
   }
 
   _getTemplate() {
-    return this._createTemplate(this._waypoints, this._index);
+    return this._createTemplate(this._points, this._index);
   }
 }
 

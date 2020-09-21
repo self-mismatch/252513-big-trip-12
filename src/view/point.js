@@ -1,11 +1,11 @@
 import AbstractView from "./abstract";
-import {getFormatedWaypointTime, getFormatedWaypointDate, getWaypointDuration} from "../utils/date";
+import {getFormatedPointTime, getFormatedPointDate, getPointDuration} from "../utils/date";
 
-export default class Waypoint extends AbstractView {
-  constructor(waypoint) {
+export default class Point extends AbstractView {
+  constructor(point) {
     super();
 
-    this._waypoint = waypoint;
+    this._point = point;
 
     this._editOpenClickHandler = this._editOpenClickHandler.bind(this);
   }
@@ -24,15 +24,15 @@ export default class Waypoint extends AbstractView {
     return template;
   }
 
-  _createTemplate(waypoint) {
-    const {basePrice, dateFrom, dateTo, destination, offers, type} = waypoint;
+  _createTemplate(point) {
+    const {basePrice, dateFrom, dateTo, destination, offers, type} = point;
 
-    const startDate = getFormatedWaypointDate(dateFrom);
-    const endDate = getFormatedWaypointDate(dateTo);
-    const startTime = getFormatedWaypointTime(dateFrom);
-    const endTime = getFormatedWaypointTime(dateTo);
+    const startDate = getFormatedPointDate(dateFrom);
+    const endDate = getFormatedPointDate(dateTo);
+    const startTime = getFormatedPointTime(dateFrom);
+    const endTime = getFormatedPointTime(dateTo);
 
-    const duration = getWaypointDuration(dateFrom, dateTo);
+    const duration = getPointDuration(dateFrom, dateTo);
 
     const offersTemplate = this._createOffersTemplate(offers);
 
@@ -71,7 +71,7 @@ export default class Waypoint extends AbstractView {
   }
 
   _getTemplate() {
-    return this._createTemplate(this._waypoint);
+    return this._createTemplate(this._point);
   }
 
   _editOpenClickHandler(evt) {

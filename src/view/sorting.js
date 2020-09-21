@@ -2,24 +2,26 @@ import AbstractView from "./abstract";
 import {SortType} from "../const";
 
 export default class Sorting extends AbstractView {
-  constructor() {
+  constructor(currentSortType) {
     super();
+
+    this._currentSortType = currentSortType;
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
-  _createTemplate() {
+  _createTemplate(currentSortType) {
     return (
       `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
         <span class="trip-sort__item  trip-sort__item--day">Day</span>
   
-        <div class="trip-sort__item  trip-sort__item--event">
-          <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" data-sort-type="${SortType.DEFAULT}" checked>
+        <div class="trip-sort__item  trip-sort__item--event ${currentSortType === SortType.DEFAULT ? `trip-sort__item--active` : ``}">
+          <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" data-sort-type="${SortType.DEFAULT}" ${currentSortType === SortType.DEFAULT ? `checked` : ``}>
           <label class="trip-sort__btn" for="sort-event">Event</label>
         </div>
   
-        <div class="trip-sort__item  trip-sort__item--time">
-          <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time" data-sort-type="${SortType.DURATION_DOWN}">
+        <div class="trip-sort__item  trip-sort__item--time ${currentSortType === SortType.DURATION_DOWN ? `trip-sort__item--active` : ``}">
+          <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time" data-sort-type="${SortType.DURATION_DOWN}" ${currentSortType === SortType.DURATION_DOWN ? `checked` : ``}>
           <label class="trip-sort__btn" for="sort-time">
             Time
             <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
@@ -28,8 +30,8 @@ export default class Sorting extends AbstractView {
           </label>
         </div>
   
-        <div class="trip-sort__item  trip-sort__item--price">
-          <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" data-sort-type="${SortType.PRICE_DOWN}">
+        <div class="trip-sort__item  trip-sort__item--price ${currentSortType === SortType.PRICE_DOWN ? `trip-sort__item--active` : ``}">
+          <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" data-sort-type="${SortType.PRICE_DOWN}" ${currentSortType === SortType.PRICE_DOWN ? `checked` : ``}>
           <label class="trip-sort__btn" for="sort-price">
             Price
             <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
@@ -44,7 +46,7 @@ export default class Sorting extends AbstractView {
   }
 
   _getTemplate() {
-    return this._createTemplate(this._waypoints);
+    return this._createTemplate(this._currentSortType);
   }
 
   _sortTypeChangeHandler(evt) {
@@ -52,6 +54,7 @@ export default class Sorting extends AbstractView {
       return;
     }
 
+    evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
