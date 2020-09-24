@@ -1,7 +1,6 @@
 import FilterView from "../view/filter.js";
 import {render, replace, remove} from "../utils/render.js";
 import {FilterType, RenderPosition, UpdateType} from "../const.js";
-import {filter} from "../utils/filter.js";
 
 export default class Filter {
   constructor(filterContainer, filterTitle, filterModel, pointsModel) {
