@@ -12,12 +12,19 @@ export default class Sorting extends AbstractView {
     const route = [].concat([], ...points);
     let routeCities = ``;
 
-    for (let i = 0; i < route.length; i++) {
-      routeCities += route[i].destination;
+    if (points.length <= 3) {
+      for (let i = 0; i < route.length; i++) {
+        routeCities += route[i].destination;
 
-      if (i !== route.length - 1) {
-        routeCities += ` &mdash; `;
+        if (i !== route.length - 1) {
+          routeCities += ` &mdash; `;
+        }
       }
+    } else {
+      const firstPoint = route[0].destination;
+      const lastPoint = route[route.length - 1].destination;
+
+      routeCities = firstPoint + ` &mdash; ` + `...` + ` &mdash; ` + lastPoint;
     }
 
     return (

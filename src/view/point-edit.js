@@ -1,28 +1,41 @@
 import SmartView from "./smart";
 import {getFormatedPointEditDate} from "../utils/date";
+import {validatePointDestination} from "../utils/form";
 import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
+const BLANK_POINT = {
+  basePrice: ``,
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  destination: ``,
+  isFavourite: false,
+  offers: [],
+  type: `bus`,
+};
+
 export default class PointEdit extends SmartView {
-  constructor(point) {
+  constructor(point = BLANK_POINT) {
     super();
 
     this._data = point;
     this._dateFromPicker = null;
     this._dateToPicker = null;
 
+    this._isAddingNew = false;
+
     this._editCloseClickHandler = this._editCloseClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setDatepicker();
   }
 
   _createOffersTemplate(offers) {
@@ -43,15 +56,7 @@ export default class PointEdit extends SmartView {
   }
 
   _createTemplate(point) {
-    const {
-      basePrice = ``,
-      dateFrom = new Date(),
-      dateTo = new Date(),
-      destination = ``,
-      isFavourite = false,
-      offers = [],
-      type = `bus`,
-    } = point;
+    const {basePrice, dateFrom, dateTo, destination, isFavourite, offers, type} = point;
 
     const startDate = getFormatedPointEditDate(dateFrom);
     const endDate = getFormatedPointEditDate(dateTo);
@@ -60,9 +65,11 @@ export default class PointEdit extends SmartView {
 
     const offersTemplate = hasOffers ? this._createOffersTemplate(offers) : null;
 
+    const isAddingNew = point === BLANK_POINT;
+    this._isAddingNew = isAddingNew;
+
     return (
-      `<li class="trip-events__item">
-        <form class="event  event--edit" action="#" method="post">
+      `${isAddingNew ? `` : `<li class="trip-events__item">`}<form class="${isAddingNew ? `trip-events__item` : ``}  event  event--edit" action="#" method="post">
           <header class="event__header">
             <div class="event__type-wrapper">
               <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -161,7 +168,7 @@ export default class PointEdit extends SmartView {
                 <span class="visually-hidden">Price</span>
                 &euro;
               </label>
-              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+              <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
             </div>
   
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -187,8 +194,7 @@ export default class PointEdit extends SmartView {
               <div class="event__available-offers">${offersTemplate}</div>
             </section>
           </section>` : ``}
-        </form>
-      </li>`
+        </form>${isAddingNew ? `` : `</li>`}`
     );
   }
 
@@ -207,7 +213,8 @@ export default class PointEdit extends SmartView {
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+    const form = this._isAddingNew ? this.getElement() : this.getElement().querySelector(`form`);
+    form.addEventListener(`submit`, this._formSubmitHandler);
   }
 
   _editCloseClickHandler(evt) {
@@ -245,8 +252,21 @@ export default class PointEdit extends SmartView {
 
   _destinationInputHandler(evt) {
     evt.preventDefault();
+
+    if (validatePointDestination(evt.target.value, this.getElement().querySelector(`#destination-list-1`))) {
+      evt.target.setCustomValidity(``);
+      this.updateData({
+        destination: evt.target.value
+      }, true);
+    } else {
+      evt.target.setCustomValidity(`Select one of the available cities`);
+    }
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
     this.updateData({
-      destination: evt.target.value
+      basePrice: evt.target.value
     }, true);
   }
 
@@ -260,7 +280,7 @@ export default class PointEdit extends SmartView {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._deleteClickHandler);
   }
 
-  _setDatepicker() {
+  setDatepicker() {
     this.removeDatepicker();
 
     this._dateFromPicker = flatpickr(
@@ -325,11 +345,12 @@ export default class PointEdit extends SmartView {
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, this._typeChangeHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`input`, this._destinationInputHandler);
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setDatepicker();
+    this.setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditCloseClickHandler(this._callback.editCloseClick);
     this.setFavouriteClickHandler(this._callback.favouriteClick);

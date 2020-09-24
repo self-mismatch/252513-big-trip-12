@@ -5,6 +5,7 @@ import TripView from "../view/trip";
 import PointListView from "../view/point-list";
 
 import PointPresenter from "../presenter/point";
+import PointNewPresenter from "../presenter/point-new";
 
 import {FilterType, SortType, UpdateType, UserAction} from "../const";
 import {remove, render} from "../utils/render";
@@ -22,7 +23,7 @@ export default class Trip {
     this._sortingComponent = null;
     this._currentSortType = SortType.DEFAULT;
 
-    this._noPointsComponent = new NoPointView();
+    this._noPointsComponent = null;
     this._tripComponent = new TripView();
 
     this._pointPresenter = {};
@@ -34,10 +35,18 @@ export default class Trip {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filtersModel.addObserver(this._handleModelEvent);
+
+    this._pointNewPresenter = new PointNewPresenter(this._tripContainer, this._handleViewAction);
   }
 
   init() {
     this._renderTrip();
+  }
+
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._pointNewPresenter.init();
   }
 
   _getPoints() {
@@ -91,6 +100,8 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._pointNewPresenter.destroy();
+
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -153,21 +164,32 @@ export default class Trip {
   _clearTrip() {
     remove(this._sortingComponent);
 
+    this._pointNewPresenter.destroy();
+
     if (this._noPointsComponent) {
       remove(this._noPointsComponent);
       this._noPointsComponent = null;
+
+      return;
     }
+
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._pointPresenter = {};
 
     remove(this._tripComponent);
     this._tripComponent = null;
-    // Object
-    //   .values(this._pointPresenter)
-    //   .forEach((presenter) => presenter.destroy());
-    // this._pointPresenter = {};
   }
 
   _renderTrip() {
     const pointsCount = this._getPoints().length;
+
+    if (pointsCount === 0) {
+      this._noPointsComponent = new NoPointView();
+      this._renderNoPoints();
+      return;
+    }
 
     this._renderSorting();
 
@@ -175,12 +197,6 @@ export default class Trip {
       this._tripComponent = new TripView();
     }
     render(this._tripContainer, this._tripComponent);
-
-    if (pointsCount === 0) {
-      this._noPointsComponent = new NoPointView();
-      this._renderNoPoints();
-      return;
-    }
 
     this._renderDays();
   }

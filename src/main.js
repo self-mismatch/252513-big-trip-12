@@ -40,3 +40,8 @@ const filterPresenter = new FilterPresenter(controls, filtersTitle, filtersModel
 
 filterPresenter.init();
 tripPresenter.init();
+
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripPresenter.createPoint();
+});

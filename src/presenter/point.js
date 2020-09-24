@@ -56,14 +56,13 @@ export default class Point {
     }
 
     remove(this._prevPointComponent);
-
-    this._prevPointEditComponent.removeDatepicker();
     remove(this._prevPointEditComponent);
   }
 
   destroy() {
-    remove(this._pointComponent);
-    remove(this._pointEditComponent);
+    // remove(this._pointComponent);
+    // remove(this._pointEditComponent);
+    this._pointEditComponent.removeDatepicker();
   }
 
   resetView() {
@@ -89,12 +88,14 @@ export default class Point {
     replace(this._pointEditComponent, this._pointComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
+    this._pointEditComponent.setDatepicker();
     this._mode = Mode.EDITING;
   }
 
   _replaceFormToPoint() {
     replace(this._pointComponent, this._pointEditComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    this._pointEditComponent.removeDatepicker();
     this._mode = Mode.DEFAULT;
   }
 

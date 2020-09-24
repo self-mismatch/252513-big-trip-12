@@ -77,7 +77,7 @@ const offers = [
   },
 ];
 
-const generateId = () => {
+export const generateId = () => {
   return Date.now() + parseInt(Math.random() * 10000, 10);
 };
 
