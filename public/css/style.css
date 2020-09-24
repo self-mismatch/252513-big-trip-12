@@ -442,6 +442,9 @@ main {
     width: 283px; }
   .trip-sort__item--price {
     width: 119px; }
+  .trip-sort__item--active svg {
+    display: block;
+  }
 
 .trip-sort__btn {
   display: -ms-inline-flexbox;
@@ -773,6 +776,12 @@ main {
     text-align: center; }
   .event__input--price {
     width: 66px; }
+  .event__input--price {
+    -moz-appearance: textfield; }
+  .event__input--price::-webkit-outer-spin-button,
+  .event__input--price::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; }
 
 .event__save-btn {
   margin-right: 18px; }

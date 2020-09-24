@@ -14,6 +14,7 @@ const getRandomElement = (array) => {
 };
 
 const getRandomDate = (start = new Date(), end = new Date(), days = 5) => {
+  start.setDate(end.getDate() - days);
   end.setDate(end.getDate() + days);
 
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));

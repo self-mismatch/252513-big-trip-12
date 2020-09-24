@@ -1,10 +1,10 @@
 // NOTE: Отрефакторить
 
-const getWaypointsDays = (waypoints) => {
+const getPointsDays = (points) => {
   let days = new Set();
 
-  waypoints.forEach((waypoint) => {
-    days.add(waypoint.dateFrom.getDate());
+  points.forEach((point) => {
+    days.add(point.dateFrom.getDate());
   });
 
   days = Array.from(days);
@@ -12,53 +12,53 @@ const getWaypointsDays = (waypoints) => {
   return days;
 };
 
-const groupWaypoints = (waypoints) => {
-  return [waypoints];
+const groupPoints = (points) => {
+  return [points];
 };
 
-const groupWaypointsByDays = (waypoints) => {
-  const days = getWaypointsDays(waypoints);
-  const groupedWaypoints = [];
+const groupPointsByDays = (points) => {
+  const days = getPointsDays(points);
+  const groupedPoints = [];
 
   for (let i = 0; i < days.length; i++) {
-    groupedWaypoints.push([]);
+    groupedPoints.push([]);
   }
 
   let currentDay = 0;
 
-  waypoints.forEach((waypoint) => {
-    if (waypoint.dateFrom.getDate() !== days[currentDay]) {
+  points.forEach((point) => {
+    if (point.dateFrom.getDate() !== days[currentDay]) {
       currentDay++;
     }
 
-    groupedWaypoints[currentDay].push(waypoint);
+    groupedPoints[currentDay].push(point);
   });
 
-  return groupedWaypoints;
+  return groupedPoints;
 };
 
-const sortWaypointsByDays = (waypoints) => {
-  const sortedWaypoints = waypoints.sort((a, b) => {
+const sortPointsByDays = (points) => {
+  const sortedPoints = points.sort((a, b) => {
     return a.dateFrom - b.dateFrom;
   });
 
-  return groupWaypointsByDays(sortedWaypoints);
+  return groupPointsByDays(sortedPoints);
 };
 
-const sortWaypointsDurationDown = (waypoints) => {
-  const sortedWaypoints = waypoints.sort((a, b) => {
+const sortPointsDurationDown = (points) => {
+  const sortedPoints = points.sort((a, b) => {
     return (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom);
   });
 
-  return groupWaypoints(sortedWaypoints);
+  return groupPoints(sortedPoints);
 };
 
-const sortWaypointsPriceDown = (waypoints) => {
-  const sortedWaypoints = waypoints.sort((a, b) => {
+const sortPointsPriceDown = (points) => {
+  const sortedPoints = points.sort((a, b) => {
     return b.basePrice - a.basePrice;
   });
 
-  return groupWaypoints(sortedWaypoints);
+  return groupPoints(sortedPoints);
 };
 
-export {sortWaypointsByDays, sortWaypointsDurationDown, sortWaypointsPriceDown};
+export {sortPointsByDays, sortPointsDurationDown, sortPointsPriceDown};
